@@ -21,7 +21,7 @@ foreach (explode(PATH_SEPARATOR, get_include_path()) as $path)
 
 if ( ! class_exists('vfsStream') && file_exists(PROJECT_BASE.'vendor/autoload.php'))
 {
-	include_once PROJECT_BASE.'vendor/autoload.php';
+	include_once PROJECT_BASE . 'vendor/autoload.php';
 	class_alias('org\bovigo\vfs\vfsStream', 'vfsStream');
 	class_alias('org\bovigo\vfs\vfsStreamDirectory', 'vfsStreamDirectory');
 	class_alias('org\bovigo\vfs\vfsStreamWrapper', 'vfsStreamWrapper');

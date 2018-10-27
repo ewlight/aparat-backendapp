@@ -15,7 +15,7 @@ class Peserta extends CI_Model
 
     public function getPesertaDetail($id) {
         $sqlget = "select fbid, fbtoken, email, name, profilepict from peserta where fbid = $id";
-        return $this->db->query($sqlget)->result();
+        return $this->db->query($sqlget)->row();
     }
 
     public function savePeserta($fbid, $fbtoken, $email, $name, $profilepict){
