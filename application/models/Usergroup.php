@@ -28,4 +28,9 @@ class Usergroup extends CI_Model
         return $this->db->query($sqlget)->result();
     }
 
+    public function checkMemberGroup($idgroup, $fbid) {
+        $sqlget = "select id from usergroup where idgroup = $idgroup and idfb = $fbid";
+        return $this->db->query($sqlget)->num_rows();
+    }
+
 }

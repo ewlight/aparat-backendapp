@@ -84,6 +84,34 @@ class Aparat extends \Restserver\Libraries\REST_Controller {
         $target = $this->post("target");
         $title = $this->post("title");
         $message = $this->post("message");
+        $this->pushNotifEngine($target, $title, $message);
+    }
+
+    public function invitemember_post() {
+        $idmember = $this->post("memberid");
+        $idgroup = $this->post("idgroup");
+        $groupname = $this->post("groupname");
+        $isMemberExist = $this->peserta->isPesertaExist($idmember);
+        if($isMemberExist == 1) {
+            $isMemberAlreadyJoin = $this->usergroup->checkMemberGroup($idgroup, $idmember);
+            if($isMemberAlreadyJoin == 1) {
+                $this->response($this->wrapper(422,"Member sudah terdaftar di group", ""), 422);
+            } else{
+                $this->usergroup->saveUserGroup($idgroup, $idmember, 0);
+                $target = array($idmember);
+                $title = "Selamat Bergabung !!!";
+                $message = "Anda baru saja bergabung dengan $groupname";
+                $this->pushNotifEngine($target, $title, $message);
+                $this->response($this->wrapper(201, "Success", ""), 201);
+            }
+        } else {
+            $this->response($this->wrapper(422,"Member tidak bisa ditemukan di system Aparat", ""), 422);
+        }
+
+
+    }
+
+    public function pushNotifEngine($target, $title, $message) {
         include FCPATH . '/vendor/pusher/pusher-push-notifications/src/PushNotifications.php';
         try {
             $pushNotifications = new \Pusher\PushNotifications\PushNotifications(array(
@@ -91,7 +119,7 @@ class Aparat extends \Restserver\Libraries\REST_Controller {
                 "secretKey" => "A8DBB5DB4B5793C574936D89EC16ADEB106201FE5934BE7BD810B9BDEECEE1BF",
             ));
             $publishResponse = $pushNotifications->publish(
-               $target,
+                $target,
                 array(
                     "fcm" => array(
                         "notification" => array(
@@ -100,11 +128,10 @@ class Aparat extends \Restserver\Libraries\REST_Controller {
                         )
                     )
                 ));
-            $this->response($this->wrapper(200,"Success", $publishResponse), 200);
+            log_message('info', $publishResponse);
         } catch (Exception $e) {
-            $this->response($this->wrapper(422,"Send Push Failed", $e), 422);
+            log_message('error', "[PUSHNOTIF] Error: $e");
         }
-
     }
 
 }

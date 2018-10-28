@@ -31,4 +31,9 @@ class Peserta extends CI_Model
 
     }
 
+    public function isPesertaExist($fbid) {
+        $sqlget = "select id from peserta where fbid = $fbid";
+        return $this->db->query($sqlget)->num_rows();
+    }
+
 }
