@@ -12,6 +12,7 @@ class Aparat extends \Restserver\Libraries\REST_Controller {
         $this->load->model("peserta");
         $this->load->model("group");
         $this->load->model("usergroup");
+        $this->load->model("rapat");
 
     }
 
@@ -132,6 +133,40 @@ class Aparat extends \Restserver\Libraries\REST_Controller {
         } catch (Exception $e) {
             log_message('error', "[PUSHNOTIF] Error: $e");
         }
+    }
+
+    public function newpengumuman_post() {
+        $idgroup = $this->post("idgroup");
+        $nama = $this->post("nama");
+        $tanggal = $this->post("tanggal");
+        $jam = $this->post("jam");
+        $deskripsi = $this->post("deskripsi");
+
+        $saverapat = $this->rapat->saveRapat($idgroup, $nama, $tanggal, $jam, $deskripsi);
+        if($saverapat) {
+            $membergroup = $this->arrayConverter($this->usergroup->getPesertaRapat($idgroup));
+            $title = "PENGUMUMAN RAPAT";
+            $convertTangal = $this->convertDateFormat($tanggal);
+            $message = "$nama tanggal $convertTangal";
+            $this->pushNotifEngine($membergroup, $title, $message);
+            $this->response($this->wrapper(201, "Success", ""), 201);
+
+        } else {
+            $this->response($this->wrapper(422,"Pengumumuman Rapat Baru Gagal di Simpan", ""), 422);
+        }
+    }
+
+    public function arrayConverter($objectResult) {
+
+        foreach($objectResult as $object) {
+            $result = $object->idfb;
+            $dataInArray[] = "$result";
+        }
+        return $dataInArray;
+    }
+
+    public function convertDateFormat($origindate) {
+        return date("d M Y", strtotime($origindate));
     }
 
 }

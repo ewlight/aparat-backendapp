@@ -24,13 +24,18 @@ class Usergroup extends CI_Model
     }
 
     public function getGroupMember($idgroup) {
-        $sqlget = "select ug.id, ug.idgroup, ug.idfb, ug.is_admin, p.name, p.profilepict  from usergroup ug, peserta p where idgroup = $idgroup and ug.idfb = p.fbid";
+        $sqlget = "select ug.id, ug.idgroup, ug.idfb, ug.is_admin, p.name, p.profilepict  from usergroup ug, peserta p where idgroup = $idgroup and ug.idfb = p.fbid order by ug.id DESC";
         return $this->db->query($sqlget)->result();
     }
 
     public function checkMemberGroup($idgroup, $fbid) {
         $sqlget = "select id from usergroup where idgroup = $idgroup and idfb = $fbid";
         return $this->db->query($sqlget)->num_rows();
+    }
+
+    public function getPesertaRapat($idgroup) {
+        $sqlget = "select idfb from usergroup where idgroup = $idgroup";
+        return $this->db->query($sqlget)->result();
     }
 
 }
