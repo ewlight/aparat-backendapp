@@ -13,9 +13,14 @@ class Rapat extends CI_Model
 
     }
 
-    public function saveRapat($idgroup, $nama, $tanggal, $jam, $deskripsi) {
-        $sqlquery = "insert into rapat (idgroup, nama, tanggal, jam, deskripsi) values ($idgroup, '$nama', '$tanggal', '$jam', '$deskripsi')";
+    public function saveRapat($id, $idgroup, $nama, $tanggal, $jam, $deskripsi) {
+        $sqlquery = "insert into rapat (id, idgroup, nama, tanggal, jam, deskripsi) values ($id, $idgroup, '$nama', '$tanggal', '$jam', '$deskripsi')";
         return $this->db->query($sqlquery);
+    }
+
+    public function  getLastRapatId() {
+        $sqlquery = "select id from rapat order by id desc limit 1";
+        return $this->db->query($sqlquery)->row();
     }
 
 

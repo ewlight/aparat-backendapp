@@ -13,6 +13,7 @@ class Aparat extends \Restserver\Libraries\REST_Controller {
         $this->load->model("group");
         $this->load->model("usergroup");
         $this->load->model("rapat");
+        $this->load->model("anggotarapat");
 
     }
 
@@ -141,13 +142,27 @@ class Aparat extends \Restserver\Libraries\REST_Controller {
         $tanggal = $this->post("tanggal");
         $jam = $this->post("jam");
         $deskripsi = $this->post("deskripsi");
+        $admin = $this->post("admin");
 
-        $saverapat = $this->rapat->saveRapat($idgroup, $nama, $tanggal, $jam, $deskripsi);
+        $getLastRapatId = $this->rapat->getLastRapatId()->id;
+        $idrapat = $getLastRapatId + 1;
+
+        $saverapat = $this->rapat->saveRapat($idrapat, $idgroup, $nama, $tanggal, $jam, $deskripsi);
         if($saverapat) {
             $membergroup = $this->arrayConverter($this->usergroup->getPesertaRapat($idgroup));
+            foreach ($membergroup as $member) {
+                if($admin == $member) {
+                    $this->anggotarapat-> saveAnggotaRapat($idrapat, $idgroup, $member, 1);
+                } else {
+                    $this->anggotarapat-> saveAnggotaRapat($idrapat, $idgroup, $member, 0);
+                }
+
+            }
             $title = "PENGUMUMAN RAPAT";
             $convertTangal = $this->convertDateFormat($tanggal);
             $message = "$nama tanggal $convertTangal";
+
+
             $this->pushNotifEngine($membergroup, $title, $message);
             $this->response($this->wrapper(201, "Success", ""), 201);
 
